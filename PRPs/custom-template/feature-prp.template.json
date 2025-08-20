@@ -1,0 +1,178 @@
+{
+  "document_type": "prp",
+  "title": "New Feature Implementation",
+  "version": "1.0",
+  "author": "User",
+  "date": "${YYYY-MM-DD}",
+  "status": "draft",
+  
+  "goal": "Build a specific feature - replace with your goal. Purpose: accelerate delivery with clear validation gates and comprehensive guidance.",
+  
+  "why": [
+    "Business value this feature provides",
+    "User problem this solves",
+    "How it integrates with existing functionality",
+    "Reduce regressions via explicit validation loops"
+  ],
+  
+  "what": {
+    "description": "Detailed description of what users will see and experience",
+    "success_criteria": [
+      "Measurable outcome 1 (e.g., response time < 200ms)",
+      "User behavior outcome 2 (e.g., 90% task completion rate)",
+      "Technical outcome 3 (e.g., zero data loss during operations)",
+      "All validation gates pass successfully"
+    ],
+    "user_stories": [
+      "As a [user type], I want to [action] so that [benefit]",
+      "As a [user type], I need to [requirement] in order to [goal]"
+    ]
+  },
+  
+  "context": {
+    "documentation": [
+      {
+        "source": "https://docs.example.com/api",
+        "why": "API endpoints and data models needed"
+      },
+      {
+        "source": "src/components/Example.tsx",
+        "why": "Existing pattern to follow for UI components"
+      }
+    ],
+    "existing_code": [
+      {
+        "file": "src/services/baseService.ts",
+        "purpose": "Service layer pattern to extend"
+      }
+    ],
+    "gotchas": [
+      "Critical requirement or constraint to remember",
+      "Common mistake to avoid during implementation",
+      "Avoid unvalidated input; always validate on server",
+      "Do not put secrets in client bundles",
+      "No blocking data fetch in large client components"
+    ],
+    "principles": [
+      "Context is King: Include ALL necessary documentation and examples",
+      "Validation Loops: Provide executable tests the AI can run and fix",
+      "Information Dense: Use keywords and patterns from the codebase",
+      "Progressive Success: Start simple, validate, then enhance"
+    ],
+    "current_tree": ".\n├── src/\n│   ├── components/\n│   ├── services/\n│   └── api/\n├── tests/\n└── docs/",
+    "desired_tree": ".\n├── src/\n│   ├── components/\n│   │   └── NewFeature/\n│   ├── services/\n│   │   └── newFeatureService.ts\n│   ├── api/\n│   │   └── newFeature/\n│   └── types/\n│       └── newFeature.ts\n├── tests/\n│   └── newFeature.test.ts\n└── docs/\n    └── newFeature.md",
+    "dependencies": [
+      "Package or service that must be available",
+      "Another feature that must be completed first"
+    ],
+    "environment_variables": [
+      "API_KEY",
+      "DATABASE_URL",
+      "FEATURE_FLAG_ENABLED"
+    ],
+    "config_notes": [
+      "Use .env.local; never commit secrets",
+      "Feature flags for gradual rollout"
+    ]
+  },
+  
+  "implementation_blueprint": {
+    "phase_1_foundation": {
+      "description": "Set up core infrastructure and data models",
+      "duration": "2-3 days",
+      "tasks": [
+        {
+          "title": "Create TypeScript interfaces",
+          "details": "Define all data types and API contracts",
+          "files": ["src/types/newFeature.ts"]
+        },
+        {
+          "title": "Set up database schema",
+          "details": "Create tables and relationships if needed",
+          "files": ["migrations/add_feature_tables.sql"]
+        },
+        {
+          "title": "Define data models",
+          "details": "Create zod schemas and validation rules",
+          "files": ["src/schemas/newFeature.ts"]
+        },
+        {
+          "title": "Reference pseudocode",
+          "details": "Sketch API handler flow and business logic",
+          "files": ["docs/pseudocode/newFeature.md"]
+        }
+      ]
+    },
+    "phase_2_implementation": {
+      "description": "Build core functionality",
+      "duration": "1 week",
+      "tasks": [
+        {
+          "title": "Implement service layer",
+          "details": "Business logic and data access",
+          "files": ["src/services/newFeatureService.ts"]
+        },
+        {
+          "title": "Create API endpoints",
+          "details": "RESTful endpoints with proper validation",
+          "files": ["src/api/newFeatureApi.ts"]
+        },
+        {
+          "title": "Build UI components",
+          "details": "React components with TypeScript",
+          "files": ["src/components/NewFeature.tsx"]
+        }
+      ]
+    },
+    "phase_3_integration": {
+      "description": "Connect everything and test",
+      "duration": "2-3 days",
+      "tasks": [
+        {
+          "title": "Integrate frontend with backend",
+          "details": "Connect UI to API endpoints",
+          "files": ["src/hooks/useNewFeature.ts"]
+        },
+        {
+          "title": "Add comprehensive tests",
+          "details": "Unit, integration, and E2E tests",
+          "files": ["tests/newFeature.test.ts"]
+        }
+      ]
+    }
+  },
+  
+  "validation": {
+    "level_1_syntax": [
+      "npm run lint -- --fix",
+      "npm run typecheck",
+      "Ensure no TypeScript errors"
+    ],
+    "level_2_unit_tests": [
+      "npm run test -- newFeature",
+      "Verify all unit tests pass with >80% coverage"
+    ],
+    "level_3_integration": [
+      "npm run test:integration",
+      "Test API endpoints with proper data flow"
+    ],
+    "level_4_end_to_end": [
+      "Start development server and test user flows",
+      "Verify feature works as expected in browser",
+      "Test error scenarios and edge cases"
+    ],
+    "final_checklist": [
+      "All lint/type checks pass",
+      "Critical user flows tested E2E",
+      "Empty states and error states handled",
+      "Performance benchmarks met",
+      "Security considerations addressed"
+    ],
+    "summary": {
+      "confidence_score": "8/10",
+      "notes": "High confidence with comprehensive validation gates and clear implementation phases"
+    }
+  }
+}
+
+

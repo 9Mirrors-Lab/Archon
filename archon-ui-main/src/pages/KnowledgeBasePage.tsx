@@ -1221,6 +1221,9 @@ const AddKnowledgeModal = ({
   const [loading, setLoading] = useState(false);
   const [crawlDepth, setCrawlDepth] = useState(2);
   const [showDepthTooltip, setShowDepthTooltip] = useState(false);
+  const [estimating, setEstimating] = useState(false);
+  const [estimate, setEstimate] = useState<any | null>(null);
+  const [estimateError, setEstimateError] = useState<string | null>(null);
   const { showToast } = useToast();
 
   // URL validation function that checks domain existence
@@ -1390,6 +1393,25 @@ const AddKnowledgeModal = ({
     }
   };
 
+  const handleEstimate = async () => {
+    try {
+      setEstimating(true);
+      setEstimate(null);
+      setEstimateError(null);
+      if (!url.trim()) {
+        showToast('Please enter a URL', 'error');
+        return;
+      }
+      const result = await knowledgeBaseService.estimateCrawl(url.trim(), crawlDepth);
+      setEstimate(result);
+    } catch (e: any) {
+      setEstimateError(e?.message || 'Failed to estimate');
+      showToast('Failed to get crawl estimate', 'error');
+    } finally {
+      setEstimating(false);
+    }
+  };
+
   return <div className="fixed inset-0 bg-gray-500/50 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
       <Card className="w-full max-w-2xl relative before:content-[''] before:absolute before:top-0 before:left-0 before:w-full before:h-[1px] before:bg-green-500 p-8">
         <h2 className="text-xl font-bold text-gray-800 dark:text-white mb-8">
@@ -1510,6 +1532,24 @@ const AddKnowledgeModal = ({
             />
           </div>
         )}
+
+        {/* Estimate Panel */}
+        {method === 'url' && (
+          <div className="mb-6 flex items-center gap-3">
+            <Button onClick={handleEstimate} variant="secondary" accentColor="blue" disabled={estimating || !url.trim()}>
+              {estimating ? 'Estimating…' : 'Crawl estimate'}
+            </Button>
+            {estimate && (
+              <div className="text-sm text-gray-700 dark:text-zinc-300">
+                <span className="mr-4">Estimated pages: <b>{estimate.estimated_pages}</b></span>
+                <span>ETA: <b>{estimate.eta_minutes} min</b></span>
+              </div>
+            )}
+            {estimateError && (
+              <div className="text-sm text-red-500">{estimateError}</div>
+            )}
+          </div>
+        )}
         
         {/* Tags */}
         <div className="mb-6">
@@ -1533,6 +1573,11 @@ const AddKnowledgeModal = ({
           <Button onClick={onClose} variant="ghost" disabled={loading}>
             Cancel
           </Button>
+          {method === 'url' && (
+            <Button onClick={handleEstimate} variant="secondary" accentColor="blue" disabled={estimating || !url.trim()}>
+              {estimating ? 'Estimating…' : 'Crawl estimate'}
+            </Button>
+          )}
           <Button onClick={handleSubmit} variant="primary" accentColor={method === 'url' ? 'blue' : 'pink'} disabled={loading}>
             {loading ? 'Adding...' : 'Add Source'}
           </Button>

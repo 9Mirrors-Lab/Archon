@@ -1,0 +1,13 @@
+{
+  "tool": "manage_document",
+  "args": {
+    "action": "add",
+    "project_id": "<PROJECT_ID>",
+    "document_type": "prp",
+    "title": "New Feature Implementation",
+    "content": REPLACE_WITH_CONTENTS_OF_feature_prp_template_json,
+    "metadata": { "author": "User", "tags": ["feature", "prp"] }
+  }
+}
+
+

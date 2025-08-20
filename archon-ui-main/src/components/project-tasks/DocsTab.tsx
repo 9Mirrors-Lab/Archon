@@ -1375,11 +1375,34 @@ const AddKnowledgeModal = ({
   const [method, setMethod] = useState<'url' | 'file'>('url');
   const [url, setUrl] = useState('');
   const [updateFrequency, setUpdateFrequency] = useState('7');
+  const [crawlDepth, setCrawlDepth] = useState(2);
   const [tags, setTags] = useState<string[]>([]);
   const [newTag, setNewTag] = useState('');
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
+  const [estimating, setEstimating] = useState(false);
+  const [estimate, setEstimate] = useState<any | null>(null);
+  const [estimateError, setEstimateError] = useState<string | null>(null);
   const { showToast } = useToast();
+
+  const handleEstimate = async () => {
+    try {
+      setEstimating(true);
+      setEstimate(null);
+      setEstimateError(null);
+      if (!url.trim()) {
+        showToast('Please enter a URL', 'error');
+        return;
+      }
+      const result = await knowledgeBaseService.estimateCrawl(url.trim(), crawlDepth);
+      setEstimate(result);
+    } catch (e: any) {
+      setEstimateError(e?.message || 'Failed to estimate');
+      showToast('Failed to get crawl estimate', 'error');
+    } finally {
+      setEstimating(false);
+    }
+  };
 
   const handleSubmit = async () => {
     try {
@@ -1395,7 +1418,8 @@ const AddKnowledgeModal = ({
           url: url.trim(),
           knowledge_type: sourceType,
           tags,
-          update_frequency: parseInt(updateFrequency)
+          update_frequency: parseInt(updateFrequency),
+          max_depth: crawlDepth
         });
         
         // Check if result contains a progressId for streaming
@@ -1476,6 +1500,37 @@ const AddKnowledgeModal = ({
             </p>
           </div>}
           
+        {/* Crawl Depth (URL only) */}
+        {method === 'url' && <div className="mb-6">
+            <label className="block text-gray-600 dark:text-zinc-400 text-sm mb-2">Crawl Depth</label>
+            <div className="flex gap-2">
+              {[1,2,3,4,5].map(d => (
+                <button key={d} onClick={() => setCrawlDepth(d)} className={`w-9 h-9 rounded-full border text-sm ${crawlDepth===d? 'bg-blue-600 text-white border-blue-600' : 'border-gray-300 dark:border-zinc-800 text-gray-600 dark:text-zinc-300 hover:border-blue-400'}`}>
+                  {d}
+                </button>
+              ))}
+            </div>
+            <p className="text-xs mt-2 text-gray-500 dark:text-zinc-500">Depth {crawlDepth}: deeper levels follow more internal links and take longer.</p>
+          </div>}
+
+        {/* Estimate panel */}
+        {method === 'url' && <div className="mb-6">
+            <div className="flex items-center gap-3">
+              <Button onClick={handleEstimate} variant="secondary" accentColor="blue" disabled={estimating || !url.trim()}>
+                {estimating ? 'Estimating…' : 'Crawl estimate'}
+              </Button>
+              {estimate && (
+                <div className="text-sm text-gray-700 dark:text-zinc-300">
+                  <span className="mr-4">Estimated pages: <b>{estimate.estimated_pages}</b></span>
+                  <span>ETA: <b>{estimate.eta_minutes} min</b></span>
+                </div>
+              )}
+              {estimateError && (
+                <div className="text-sm text-red-500">{estimateError}</div>
+              )}
+            </div>
+          </div>}
+
         {/* Update Frequency */}
         {method === 'url' && <div className="mb-6">
             <Select label="Update Frequency" value={updateFrequency} onChange={e => setUpdateFrequency(e.target.value)} options={[{
@@ -1516,6 +1571,11 @@ const AddKnowledgeModal = ({
           <Button onClick={onClose} variant="ghost" disabled={loading}>
             Cancel
           </Button>
+          {method === 'url' && (
+            <Button onClick={handleEstimate} variant="secondary" accentColor="blue" disabled={estimating || !url.trim()}>
+              {estimating ? 'Estimating…' : 'Crawl estimate'}
+            </Button>
+          )}
           <Button onClick={handleSubmit} variant="primary" accentColor={method === 'url' ? 'blue' : 'pink'} disabled={loading}>
             {loading ? 'Adding...' : 'Add Source'}
           </Button>

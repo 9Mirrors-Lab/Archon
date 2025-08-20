@@ -135,6 +135,51 @@ Once everything is running:
 | **MCP Server**     | archon-mcp     | http://localhost:8051 | Model Context Protocol interface  |
 | **Agents Service** | archon-agents  | http://localhost:8052 | AI/ML operations, reranking       |
 
+### MCP Commands
+
+Below are the MCP tools exposed by Archon, with purpose and minimal examples. Use these from your MCP-capable client (Cursor, Claude Code, etc.).
+
+- **health_check**: Health of MCP and dependent services.
+```json
+{ "tool": "health_check" }
+```
+- **session_info**: Active session counts and uptime.
+```json
+{ "tool": "session_info" }
+```
+- **get_available_sources**: List knowledge sources in the KB.
+```json
+{ "tool": "get_available_sources" }
+```
+- **perform_rag_query**: Query the KB with optional source filter.
+```json
+{ "tool": "perform_rag_query", "args": { "query": "vector db indexing", "match_count": 5 } }
+```
+- **search_code_examples**: Find extracted code examples relevant to a query.
+```json
+{ "tool": "search_code_examples", "args": { "query": "Next.js middleware", "match_count": 3 } }
+```
+- **manage_project**: Create/list/get/delete projects.
+```json
+{ "tool": "manage_project", "args": { "action": "create", "title": "OAuth2 Authentication System" } }
+```
+- **manage_task**: PRP-driven task lifecycle (todo → doing → review → done).
+```json
+{ "tool": "manage_task", "args": { "action": "list", "filter_by": "status", "filter_value": "todo", "per_page": 25 } }
+```
+- **manage_document**: Add/list/get/update/delete documents (PRP or markdown). For PRPs, content must be structured JSON.
+```json
+{ "tool": "manage_document", "args": { "action": "add", "project_id": "<PROJECT_ID>", "document_type": "markdown", "title": "Notes", "content": { "markdown": "# My Notes" } } }
+```
+- **manage_versions**: Immutable version history and restore.
+```json
+{ "tool": "manage_versions", "args": { "action": "list", "project_id": "<PROJECT_ID>", "field_name": "docs" } }
+```
+- **get_project_features**: Retrieve project's feature list.
+```json
+{ "tool": "get_project_features", "args": { "project_id": "<PROJECT_ID>" } }
+```
+
 ## What's Included
 
 ### 🧠 Knowledge Management

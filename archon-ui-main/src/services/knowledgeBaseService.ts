@@ -252,6 +252,16 @@ class KnowledgeBaseService {
   }
 
   /**
+   * Estimate crawl scope and runtime without launching a crawl
+   */
+  async estimateCrawl(url: string, maxDepth: number = 2) {
+    return apiRequest('/knowledge-items/estimate', {
+      method: 'POST',
+      body: JSON.stringify({ url, max_depth: maxDepth })
+    });
+  }
+
+  /**
    * Get detailed information about a knowledge item
    */
   async getKnowledgeItemDetails(sourceId: string) {

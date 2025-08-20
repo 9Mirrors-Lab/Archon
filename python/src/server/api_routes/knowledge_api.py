@@ -23,6 +23,7 @@ from ..services.storage import DocumentStorageService
 from ..services.search.rag_service import RAGService
 from ..services.knowledge import KnowledgeItemService, DatabaseMetricsService
 from ..services.crawling import CrawlOrchestrationService
+from ..services.crawling.estimator_service import estimate_crawl
 from ..services.crawler_manager import get_crawler
 
 # Import unified logging
@@ -87,6 +88,25 @@ class CrawlRequest(BaseModel):
     update_frequency: int = 7
     max_depth: int = 2  # Maximum crawl depth (1-5)
 
+
+class CrawlEstimateRequest(BaseModel):
+    url: str
+    max_depth: int = 2
+
+
+@router.post("/knowledge-items/estimate")
+async def estimate_knowledge_crawl(request: CrawlEstimateRequest):
+    """Return a quick estimate of pages and ETA without launching a crawl."""
+    try:
+        if not request.url:
+            raise HTTPException(status_code=422, detail="URL is required")
+        result = await estimate_crawl(request.url, request.max_depth)
+        return {"success": True, **result}
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to estimate crawl: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
 class RagQueryRequest(BaseModel):
     query: str
